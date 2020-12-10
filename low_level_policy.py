@@ -19,7 +19,7 @@ def diagonal_distance(i1, j1, i2, j2):
 def AStar(grid_map, i_start, j_start, i_goal, j_goal, heuristic_function=diagonal_distance, open_type=GridOpen,
           closed_type=GridClose):
 
-    # TODO think about what this function should output
+    # TODO think about time dependence of occupation grid and  what this function should output
     OPEN = open_type()
     CLOSED = closed_type()
 
