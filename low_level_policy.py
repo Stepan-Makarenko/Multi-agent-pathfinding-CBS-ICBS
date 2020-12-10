@@ -4,16 +4,16 @@ from open import GridOpen
 from close import GridClose
 
 
-def CalculateCost(i1, j1, i2, j2):
+def calculate_cost(i1, j1, i2, j2):
     return np.sqrt((i1 - i2) ** 2 + (j1 - j2) ** 2)
 
 
 def diagonal_distance(i1, j1, i2, j2):
-    D = 1
-    D2 = np.sqrt(2)
+    d = 1
+    d2 = np.sqrt(2)
     dx = abs(i1 - i2)
     dy = abs(j1 - j2)
-    return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+    return d * (dx + dy) + (d2 - 2 * d) * min(dx, dy)
 
 
 def AStar(grid_map, i_start, j_start, i_goal, j_goal, heuristic_function=diagonal_distance, open_type=GridOpen,
@@ -34,7 +34,7 @@ def AStar(grid_map, i_start, j_start, i_goal, j_goal, heuristic_function=diagona
         CLOSED.add_node(state)
         next_coords = grid_map.GetNeighbors(state.i, state.j)
         for next_coord in next_coords:
-            next_g = state.g + CalculateCost(state.i, state.j, next_coord[0], next_coord[1])
+            next_g = state.g + calculate_cost(state.i, state.j, next_coord[0], next_coord[1])
             heuristic_dist = heuristic_function(next_coord[0], next_coord[1], goal.i, goal.j)
             # Add clear F func
             next_state = GridNode(next_coord[0], next_coord[1], next_g, heuristic_dist, None, state)
