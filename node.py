@@ -19,12 +19,36 @@ class GridNode:
 
 # Node for Constraint Tree (CT)
 class CTNode:
-    def __init__(self, constrains, solution, cost, f=None, parent=None):
+    def __init__(self, constraints, solution, cost, parent=None, entry=0):
         # TODO implement CT node with following list of fields:
         #   constraints - set of constrains in format (agent_id, vertex, timestep)
         #   solution - set of paths, one path for each agent, each path is consistent with constrains
         #   cost - the total cost of current solution
+        #   entry - to break ties in OPEN in FIFO manner
+        self.constraints = constraints
+        self.solution = solution
+        self.cost = cost
+        self.parent = parent
+        self.entry = entry
+        self.conflicts = []
         pass
 
     def __eq__(self, other):
+        return self.solution == other.solution
+
+    def __lt__(self, other):
+        # CT nodes must be ordered by their costs.
+        # Ties are broken in favor of CT nodes whose associated solution contains fewer conflicts.
+        # Further ties are broken in a FIFO manner.
+        if self.cost > other.cost:
+            return False
+        if self.cost < other.cost:
+            return True
+        if len(self.conflicts) > len(other.conflicts):
+            return False
+        if len(self.conflicts) < len(other.conflicts):
+            return True
+        return self.entry < other.entry
+
+    def validate_conflicts(self):
         pass
