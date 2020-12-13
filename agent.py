@@ -6,5 +6,5 @@ class Agent:
         self.start_j = start_j
         self.goal_i = goal_i
         self.goal_j = goal_j
-        self.ind = Agent.id
+        self.id = Agent.id
         Agent.id += 1
