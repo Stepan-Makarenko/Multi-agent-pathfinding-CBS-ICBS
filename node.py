@@ -3,10 +3,12 @@ import math
 
 # Node for grid
 class GridNode:
-    def __init__(self, i=-1, j=-1, g=math.inf, h=math.inf, f=None, parent=None):
+    def __init__(self, i=-1, j=-1, t=0, g=math.inf, h=math.inf, f=None, parent=None):
         self.i = i
         self.j = j
         self.g = g
+        # Add time dimension
+        self.t = 0
         if f is None:
             self.f = self.g + h
         else:
@@ -14,7 +16,7 @@ class GridNode:
         self.parent = parent
 
     def __eq__(self, other):
-        return (self.i == other.i) and (self.j == other.j)
+        return (self.i == other.i) and (self.j == other.j) and ((self.t == other.t) or self.t == -1)
 
 
 # Node for Constraint Tree (CT)
