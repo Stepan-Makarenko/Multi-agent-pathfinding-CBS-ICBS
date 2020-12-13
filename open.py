@@ -30,7 +30,7 @@ class GridOpen:
         self.entry_counter = 0
 
     def __iter__(self):
-        return len(self.queue)
+        return iter(self.queue)
 
     def __len__(self):
         return len(self.queue)
