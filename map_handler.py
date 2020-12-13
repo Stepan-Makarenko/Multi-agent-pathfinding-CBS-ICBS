@@ -7,15 +7,15 @@ class Map:
         self.height = 0
         self.cells = []
 
-    # Converting a string (with '#' representing obstacles and '.' representing free cells) to a grid
-    def ReadFromString(self, cellStr, width, height):
+    # Initialization of map by string.
+    def read_from_string(self, cell_str, width, height):
         self.width = width
         self.height = height
         self.cells = [[0 for _ in range(width)] for _ in range(height)]
-        cellLines = cellStr.split("\n")
+        cell_lines = cell_str.split("\n")
         i = 0
         j = 0
-        for l in cellLines:
+        for l in cell_lines:
             if len(l) != 0:
                 j = 0
                 for c in l:
@@ -36,28 +36,44 @@ class Map:
             raise Exception("Size Error. Map height = ", i, ", but must be", height)
 
     # Initialization of map by list of cells.
-    def SetGridCells(self, width, height, gridCells):
+    def set_grid_cells(self, width, height, grid_cells):
         self.width = width
         self.height = height
-        self.cells = gridCells
+        self.cells = grid_cells
 
-    # Check if the cell is on a grid.
-    def inBounds(self, i, j):
+    # Checks cell is on grid.
+    def in_bounds(self, i, j):
         return (0 <= j < self.width) and (0 <= i < self.height)
 
-    # Check if thec cell is not an obstacle.
-    def Traversable(self, i, j):
+    # Checks cell is not obstacle.
+    def traversable(self, i, j):
         return not self.cells[i][j]
 
-    # Get a list of neighbouring cells as (i,j) tuples.
-    # It's assumed that grid is 4-connected (i.e. only moves into cardinal directions are allowed)
-    def GetNeighbors(self, i, j):
+    # Creates a list of neighbour cells as (i,j) tuples.
+    def get_neighbors(self, i, j):
+        # TODO Change the function so that the list includes the diagonal neighbors of the cell.
+        # Cutting corners must be prohibited
         neighbors = []
-        # Add wait step [0, 0]
-        delta = [[0, 1], [1, 0], [0, -1], [-1, 0], [0, 0]]
-
-        for d in delta:
-            if self.inBounds(i + d[0], j + d[1]) and self.Traversable(i + d[0], j + d[1]):
-                neighbors.append((i + d[0], j + d[1]))
+        candidates = [(i - 1, j + x) for x in [-1, 0, 1]] + [(i, j + 1)] + [(i + 1, j - x) for x in [-1, 0, 1]] + [
+            (i, j - 1)]
+        for i in range(8):
+            if candidates[i]:
+                if i % 2 == 0:
+                    if self.in_bounds(*candidates[i]) and self.traversable(*candidates[i]):
+                        continue
+                    else:
+                        candidates[i] = 0
+                else:
+                    if self.in_bounds(*candidates[i]) and self.traversable(*candidates[i]):
+                        continue
+                    else:
+                        candidates[i] = 0
+                        candidates[i - 1] = 0
+                        candidates[(i + 1) % 8] = 0
+        for candidate in candidates:
+            if candidate:
+                neighbors.append(candidate)
+        # Add wait action
+        neighbors.append((i, j))
 
         return neighbors

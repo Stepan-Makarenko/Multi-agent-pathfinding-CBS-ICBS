@@ -16,6 +16,7 @@ class GridNode:
         self.parent = parent
 
     def __eq__(self, other):
+        # Use t = -1 to define goal_state timestep
         return (self.i == other.i) and (self.j == other.j) and ((self.t == other.t) or self.t == -1)
 
 
