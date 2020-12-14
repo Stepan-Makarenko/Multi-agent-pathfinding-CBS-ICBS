@@ -44,11 +44,10 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen):
 
         # Try to avoid duplicate detection
         for i, _ in enumerate(conflicting_agents):
-            a = CTNode(constraints=None, solution=None, cost=None, parent=p, entry=0)
-            a.constraints = (agent_id, *vertex_and_time)
-            a.solution = p.solution
+            a = CTNode(constraints = set(), solution=p.solution, cost=None, parent=p, entry=0)
             for j, agent_id in enumerate(conflicting_agents):
                 if i != j:
+                    a.constraints.add((agent_id, *vertex_and_time))
                     a.solution[agent_id] = low_level_policy(MAPF_instance, id_to_agent[agent_id],
                                                             constrains=a.extract_all_constraints())
             a.cost = sum([root.solution[agent.id][1] for agent in agents])

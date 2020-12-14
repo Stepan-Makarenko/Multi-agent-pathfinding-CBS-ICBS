@@ -40,7 +40,7 @@ class GridNode:
 class CTNode:
     def __init__(self, constraints, solution, cost, parent=None, entry=0):
         # TODO implement CT node with following list of fields:
-        #   constraints - (agent_id, i, j, t), only the last one is stored
+        #   constraints - set of (agent_id, i, j, t), only the last set is stored
         #   solution - (agent_id: (path, length)}, each path is consistent with constrains
         #   cost - the total cost of current solution
         #   entry - to break ties in OPEN in FIFO manner
@@ -108,7 +108,7 @@ class CTNode:
             current = self
             constraints = set()
             while current.parent:
-                constraints.add(self.constraints)
+                constraints = constraints.union(self.constraints)
                 current = current.parent
             return constraints
         return set()
