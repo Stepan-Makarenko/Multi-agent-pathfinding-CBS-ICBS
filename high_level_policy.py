@@ -29,6 +29,7 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen):
 
     root = CTNode(constraints=None, solution=None, cost=None, parent=None, entry=0)
     id_to_agent = {agent.id: agent for agent in agents}
+    root.constrains = set()
     root.solution = {agent.id: low_level_policy(MAPF_instance, agent, constrains=None) for agent in agents}
     root.cost = sum([root.solution[agent.id][1] for agent in agents])
     OPEN.add_node(root)
@@ -46,7 +47,7 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen):
             a.solution = p.solution
             for j, agent_id in enumerate(conflicting_agents):
                 if i != j:
-                    new_constrains[(agent_id, conflict[-1])] = 0
+                    new_constrains.add((agent_id, conflict[-1]))
                     a.solution[agent_id] = low_level_policy(MAPF_instance, id_to_agent[agent_id],
                                                             constrains=new_constrains)
             a.constraints = new_constrains
