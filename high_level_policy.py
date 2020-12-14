@@ -26,31 +26,33 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen):
     #           if A.cost < ∞ // A solution was found then
     #               Insert A to OPEN
     OPEN = open_type()
-
-    root = CTNode(constraints=None, solution=None, cost=None, parent=None, entry=0)
+    entry = 0
+    root = CTNode(constraints=None, solution=None, cost=None, parent=None, entry=entry)
     id_to_agent = {agent.id: agent for agent in agents}
     root.constrains = set()
-    root.solution = {agent.id: low_level_policy(MAPF_instance, agent, constrains=None) for agent in agents}
+    root.solution = {agent.id: low_level_policy(MAPF_instance, agent,
+                                                constrains=root.extract_all_constraints()) for agent in agents}
     root.cost = sum([root.solution[agent.id][1] for agent in agents])
     OPEN.add_node(root)
     while len(OPEN) != 0:
         p = OPEN.get_best_node()
-        conflict = p.validate_conflicts() # (a_0_id, a_1_id, ..., a_k_id grid_node)
-        conflicting_agents = conflict[:-1]
+        conflict = p.validate_conflicts() # tuple (a_0_id, a_1_id, ..., a_k_id, x, y, t)
         if not conflict:
             return p.solution
+        conflicting_agents = conflict[:-3]
+        vertex_and_time = conflict[-3:]
 
         # Try to avoid duplicate detection
         for i, _ in enumerate(conflicting_agents):
-            a = CTNode(constraints=None, solution=None, cost=None, parent=None, entry=0)
-            new_constrains = p.constrains.copy()
+            a = CTNode(constraints=None, solution=None, cost=None, parent=p, entry=0)
+            a.constraints = (agent_id, *vertex_and_time)
             a.solution = p.solution
             for j, agent_id in enumerate(conflicting_agents):
                 if i != j:
-                    new_constrains.add((agent_id, conflict[-1]))
                     a.solution[agent_id] = low_level_policy(MAPF_instance, id_to_agent[agent_id],
-                                                            constrains=new_constrains)
-            a.constraints = new_constrains
+                                                            constrains=a.extract_all_constraints())
             a.cost = sum([root.solution[agent.id][1] for agent in agents])
             if a.cost < float('inf'):
+                entry+=1
+                a.entry = entry
                 OPEN.add_node(a)
