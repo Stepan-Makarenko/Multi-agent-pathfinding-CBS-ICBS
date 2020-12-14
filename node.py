@@ -1,6 +1,7 @@
 import math
 from collections import defaultdict
 
+
 def item_in_list(l, idx):
     try:
         return l[idx].i, l[idx].j
@@ -14,6 +15,7 @@ def list_duplicates(seq):
         count[item].append(i)
     # generates ((x,y), [agent_id1 ... agent_idk])
     return ((key, locs) for key, locs in count.items() if len(locs) > 1)
+
 
 # Node for grid
 class GridNode:
@@ -72,11 +74,11 @@ class CTNode:
         t = 0
         max_t = max(map(lambda x: len(x[0]), self.solution.values()))
         while True:
-            all_locations = [item_in_list(self.solution[i],t) for i in range(len(self.solution))]
+            all_locations = [item_in_list(self.solution[i], t) for i in range(len(self.solution))]
             for coord_ids in list_duplicates(all_locations):
                 # (agent_id1 ... agent_idk, x, y, t)
-                return (*coord_ids[1], *coord_ids[0], t) #a conflict found, validation halts, it's a non-goal node
-            t+=1
+                return (*coord_ids[1], *coord_ids[0], t)  # a conflict found, validation halts, it's a non-goal node
+            t += 1
             if t == max_t:
                 break
         return None
