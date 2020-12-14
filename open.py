@@ -5,22 +5,25 @@ from node import GridNode, CTNode
 class CTOpen:
     # TODO implement Constraint Tree OPEN for CT nodes
     def __init__(self):
-        pass
+        self.queue = []
 
     def __iter__(self):
-        pass
+        return iter(self.queue)
 
     def __len__(self):
-        pass
+        return len(self.queue)
 
     def is_empty(self):
-        pass
+        if len(self.queue) != 0:
+            return False
+        return True
 
     def get_best_node(self):
-        pass
+        best = heapq.heappop(self.queue)
+        return best
 
     def add_node(self, item: CTNode):
-        pass
+        heapq.heappush(self.queue, item)
 
 
 class GridOpen:
