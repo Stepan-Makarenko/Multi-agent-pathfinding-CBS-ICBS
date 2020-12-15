@@ -6,9 +6,13 @@ from IPython.display import HTML
 from node import GridNode
 
 
-def draw(grid_map, agents=None, solution=None, nodesExpanded=None, nodesOpened=None):
+def draw(grid_map, agents=None, solution=None, fig_size=(6.4, 6.4), nodesExpanded=None, nodesOpened=None):
     if solution is not None:
-        fig = plt.figure()
+        fig = plt.figure(figsize=fig_size)
+        fig.set_size_inches(*fig_size)
+        ax = plt.Axes(fig, [0., 0., 1., 1.])
+        ax.set_axis_off()
+        fig.add_axes(ax)
         images = []
         # Assign different collor for different agents:
         collors = [tuple(np.random.randint(0, 255, 3)) for i in range(len(agents))]
@@ -23,6 +27,8 @@ def draw(grid_map, agents=None, solution=None, nodesExpanded=None, nodesOpened=N
                 for j in range(grid_map.width):
                     if (grid_map.cells[i][j] == 1):
                         draw.rectangle((j * k, i * k, (j + 1) * k - 1, (i + 1) * k - 1), fill=(70, 80, 80))
+                    elif (grid_map.cells[i][j] == 2):
+                        draw.rectangle((j * k, i * k, (j + 1) * k - 1, (i + 1) * k - 1), fill='green')
 
             for i, (path, length) in enumerate(solution.values()):
                 step = path[min(t, len(path) - 1)]
