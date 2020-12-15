@@ -5,7 +5,7 @@ from close import GridClose
 
 
 def calculate_cost(i1, j1, i2, j2):
-    # Wait action coasts 1
+    # Wait action costs 1
     return max(1, np.sqrt((i1 - i2) ** 2 + (j1 - j2) ** 2))
 
 
@@ -17,7 +17,11 @@ def diagonal_distance(i1, j1, i2, j2):
     return d * (dx + dy) + (d2 - 2 * d) * min(dx, dy)
 
 
-def AStar(grid_map, agent, constrains, heuristic_function=diagonal_distance, open_type=GridOpen,
+def manhattan_distance(i1, j1, i2, j2):
+    return abs(i1 - i2) + abs(j1 - j2)
+
+
+def AStar(grid_map, agent, constraints, heuristic_function=diagonal_distance, open_type=GridOpen,
           closed_type=GridClose):
 
     def make_path(goal):
@@ -39,23 +43,20 @@ def AStar(grid_map, agent, constrains, heuristic_function=diagonal_distance, ope
     # TODO start node should depend on agent!
     OPEN.add_node(GridNode(agent.start_i, agent.start_j, t=0, g=0, h=0))
     # Add time dimension
-    time = 0
     while len(OPEN) != 0:
         state = OPEN.get_best_node()
         if state == goal:
-            return make_path(goal)
+            return make_path(state)
 
         CLOSED.add_node(state)
         next_coords = grid_map.get_neighbors(state.i, state.j)
         for next_coord in next_coords:
             next_g = state.g + calculate_cost(state.i, state.j, next_coord[0], next_coord[1])
             heuristic_dist = heuristic_function(next_coord[0], next_coord[1], goal.i, goal.j)
-            # Add clear F func
             next_state = GridNode(next_coord[0], next_coord[1], g=next_g,
-                                  t=time+1, h=heuristic_dist, f=None, parent=state)
-            if CLOSED.was_expanded(next_state) or (agent.id, next_state.i, next_state.j, next_state.t) in constrains:
+                                  t=state.t+1, h=heuristic_dist, f=None, parent=state)
+            if CLOSED.was_expanded(next_state) or (agent.id, next_state.i, next_state.j, next_state.t) in constraints:
                 continue
             OPEN.add_node(next_state)
-        time += 1
 
     return None, float('inf')

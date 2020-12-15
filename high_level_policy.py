@@ -3,7 +3,7 @@ from open import CTOpen
 from low_level_policy import AStar
 
 
-def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen):
+def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen, **kwargs):
     # TODO implement high level policy to handle Constraint Tree
     #   use following pseudo code:
     #       Input: MAPF instance
@@ -29,14 +29,14 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen):
     entry = 0
     root = CTNode(constraints=None, solution=None, cost=None, parent=None, entry=entry)
     id_to_agent = {agent.id: agent for agent in agents}
-    root.constrains = set()
+    root.constraints = set()
     root.solution = {agent.id: low_level_policy(MAPF_instance, agent,
-                                                constrains=root.extract_all_constraints()) for agent in agents}
+                                                constraints=root.extract_all_constraints(), **kwargs) for agent in agents}
     root.cost = sum([root.solution[agent.id][1] for agent in agents])
     OPEN.add_node(root)
     while len(OPEN) != 0:
         p = OPEN.get_best_node()
-        conflict = p.validate_conflicts() # tuple (a_0_id, a_1_id, ..., a_k_id, x, y, t)
+        conflict = p.validate_conflicts()  # tuple (a_0_id, a_1_id, ..., a_k_id, x, y, t)
         if not conflict:
             return p.solution
         conflicting_agents = conflict[:-3]
@@ -44,14 +44,14 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen):
 
         # Try to avoid duplicate detection
         for i, _ in enumerate(conflicting_agents):
-            a = CTNode(constraints = set(), solution=p.solution, cost=None, parent=p, entry=0)
+            a = CTNode(constraints=set(), solution=p.solution.copy(), cost=None, parent=p, entry=0)
             for j, agent_id in enumerate(conflicting_agents):
                 if i != j:
                     a.constraints.add((agent_id, *vertex_and_time))
                     a.solution[agent_id] = low_level_policy(MAPF_instance, id_to_agent[agent_id],
-                                                            constrains=a.extract_all_constraints())
-            a.cost = sum([root.solution[agent.id][1] for agent in agents])
+                                                            constraints=a.extract_all_constraints(), **kwargs)
+            a.cost = sum([a.solution[agent.id][1] for agent in agents])
             if a.cost < float('inf'):
-                entry+=1
+                entry += 1
                 a.entry = entry
                 OPEN.add_node(a)

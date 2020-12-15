@@ -33,8 +33,8 @@ class GridClose:
 
     # AddNode is the method that inserts the node to CLOSED
     def add_node(self, item: GridNode, *args):
-        self.coord_to_node[(item.i, item.j)] = item
+        self.coord_to_node[(item.i, item.j, item.t)] = item
 
     # WasExpanded is the method that checks if a node has been expanded
     def was_expanded(self, item: GridNode, *args):
-        return (item.i, item.j) in self.coord_to_node
+        return (item.i, item.j, item.t) in self.coord_to_node

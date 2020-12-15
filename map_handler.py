@@ -6,12 +6,14 @@ class Map:
         self.width = 0
         self.height = 0
         self.cells = []
+        self.diagonal_movements = True
 
     # Initialization of map by string.
-    def read_from_string(self, cell_str, width, height):
+    def read_from_string(self, cell_str, width, height, diagonal_movements=True):
         self.width = width
         self.height = height
         self.cells = [[0 for _ in range(width)] for _ in range(height)]
+        self.diagonal_movements = diagonal_movements
         cell_lines = cell_str.split("\n")
         i = 0
         j = 0
@@ -54,26 +56,33 @@ class Map:
         # TODO Change the function so that the list includes the diagonal neighbors of the cell.
         # Cutting corners must be prohibited
         neighbors = []
-        candidates = [(i - 1, j + x) for x in [-1, 0, 1]] + [(i, j + 1)] + [(i + 1, j - x) for x in [-1, 0, 1]] + [
-            (i, j - 1)]
-        for i in range(8):
-            if candidates[i]:
-                if i % 2 == 0:
-                    if self.in_bounds(*candidates[i]) and self.traversable(*candidates[i]):
-                        continue
+        if self.diagonal_movements:
+            candidates = [(i - 1, j + x) for x in [-1, 0, 1]] + [(i, j + 1)] + [(i + 1, j - x) for x in [-1, 0, 1]] + [
+                (i, j - 1)]
+            for i in range(8):
+                if candidates[i]:
+                    if i % 2 == 0:
+                        if self.in_bounds(*candidates[i]) and self.traversable(*candidates[i]):
+                            continue
+                        else:
+                            candidates[i] = 0
                     else:
-                        candidates[i] = 0
-                else:
-                    if self.in_bounds(*candidates[i]) and self.traversable(*candidates[i]):
-                        continue
-                    else:
-                        candidates[i] = 0
-                        candidates[i - 1] = 0
-                        candidates[(i + 1) % 8] = 0
-        for candidate in candidates:
-            if candidate:
-                neighbors.append(candidate)
-        # Add wait action
-        neighbors.append((i, j))
+                        if self.in_bounds(*candidates[i]) and self.traversable(*candidates[i]):
+                            continue
+                        else:
+                            candidates[i] = 0
+                            candidates[i - 1] = 0
+                            candidates[(i + 1) % 8] = 0
+            for candidate in candidates:
+                if candidate:
+                    neighbors.append(candidate)
+            # Add wait action
+            neighbors.append((i, j))
+        else:
+            # Add wait action
+            delta = [[0, 0], [0, 1], [1, 0], [0, -1], [-1, 0]]
+            for d in delta:
+                if self.in_bounds(i + d[0], j + d[1]) and self.traversable(i + d[0], j + d[1]):
+                    neighbors.append((i + d[0], j + d[1]))
 
         return neighbors

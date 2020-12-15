@@ -24,7 +24,7 @@ class GridNode:
         self.j = j
         self.g = g
         # Add time dimension
-        self.t = 0
+        self.t = t
         if f is None:
             self.f = self.g + h
         else:
@@ -74,7 +74,7 @@ class CTNode:
         t = 0
         max_t = max(map(lambda x: len(x[0]), self.solution.values()))
         while True:
-            all_locations = [item_in_list(self.solution[i], t) for i in range(len(self.solution))]
+            all_locations = [item_in_list(self.solution[i][0], t) for i in range(len(self.solution))]
             for coord_ids in list_duplicates(all_locations):
                 # (agent_id1 ... agent_idk, x, y, t)
                 return (*coord_ids[1], *coord_ids[0], t)  # a conflict found, validation halts, it's a non-goal node
@@ -91,7 +91,7 @@ class CTNode:
         max_t = max(map(lambda x: len(x[0]), self.solution.values()))
         confl_counter = 0
         while True:
-            all_locations = [item_in_list(self.solution[i], t) for i in range(len(self.solution))]
+            all_locations = [item_in_list(self.solution[i][0], t) for i in range(len(self.solution))]
             for coord_ids in list_duplicates(all_locations):
                 confl_counter += len(coord_ids[1])
             t += 1
@@ -108,7 +108,7 @@ class CTNode:
             current = self
             constraints = set()
             while current.parent:
-                constraints = constraints.union(self.constraints)
+                constraints = constraints.union(current.constraints)
                 current = current.parent
             return constraints
         return set()

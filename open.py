@@ -48,14 +48,14 @@ class GridOpen:
         return best[2]
 
     def add_node(self, item: GridNode):
-        if (item.i, item.j) in self.coord_to_node:
-            if self.coord_to_node[(item.i, item.j)].g > item.g:
-                self.coord_to_node[(item.i, item.j)].f = item.f
-                self.coord_to_node[(item.i, item.j)].g = item.g
-                self.coord_to_node[(item.i, item.j)].parent = item.parent
+        if (item.i, item.j, item.t) in self.coord_to_node:
+            if self.coord_to_node[(item.i, item.j, item.t)].g > item.g:
+                self.coord_to_node[(item.i, item.j, item.t)].f = item.f
+                self.coord_to_node[(item.i, item.j, item.t)].g = item.g
+                self.coord_to_node[(item.i, item.j, item.t)].parent = item.parent
                 heapq.heappush(self.queue, (item.f, self.entry_counter, item))
                 self.entry_counter += 1
         else:
-            self.coord_to_node[(item.i, item.j)] = item
+            self.coord_to_node[(item.i, item.j, item.t)] = item
             heapq.heappush(self.queue, (item.f, self.entry_counter, item))
             self.entry_counter += 1
