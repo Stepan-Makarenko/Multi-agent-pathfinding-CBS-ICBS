@@ -1,6 +1,5 @@
 # TODO find suitable maps to test algorithm and create a way to handle them
 class Map:
-
     # Default constructor
     def __init__(self):
         self.width = 0
@@ -23,8 +22,10 @@ class Map:
                 for c in l:
                     if c == '.':
                         self.cells[i][j] = 0
-                    elif c == '#':
+                    elif c == '#' or c == '@':
                         self.cells[i][j] = 1
+                    elif c == 'T':
+                        self.cells[i][j] = 2
                     else:
                         continue
                     j += 1
@@ -86,3 +87,37 @@ class Map:
                     neighbors.append((i + d[0], j + d[1]))
 
         return neighbors
+
+
+def read_map(path):
+    tasksFile = open(path)
+    lines = tasksFile.readlines()
+    # map_type = tasksFile.readline()
+    # height = tasksFile.readline()
+    # width = tasksFile.readline()
+    # name = tasksFile.readline()
+    result = ''
+    # for l in tasksFile:
+    for l in lines[4:]:
+        result += '\n' + l
+    tasksFile.close()
+    return result[1:]
+
+
+def cast(x):
+    try:
+        if x.find('.') != -1:
+            return float(x)
+        return int(x)
+    except Exception as e:
+        return x
+
+
+def read_tasks(path):
+    tasksFile = open(path)
+    tasks = []
+    ver = tasksFile.readline()
+    for l in tasksFile:
+        tasks += [list(map(cast, l.strip().split('\t')))]
+    tasksFile.close()
+    return tasks
