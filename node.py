@@ -10,11 +10,24 @@ def item_in_list(l, idx):
 
 
 def list_duplicates(seq):
+    # Return conflict vertexes and edges
+
+    # Vertex conflict handler
     count = defaultdict(list)
-    for i, item in enumerate(seq):
+    for i, item in enumerate(seq[1]):
         count[item].append(i)
-    # generates ((x,y), [agent_id1 ... agent_idk])
-    return ((key, locs) for key, locs in count.items() if len(locs) > 1)
+    # generates ('v', [agent_id1 ... agent_idk], (x,y))
+    all_conflicts = [('v', locs, key) for key, locs in count.items() if len(locs) > 1]
+
+    # Edge conflict handler
+    count = defaultdict(int)
+    for i, (item1, item2) in enumerate(zip(*seq)):  # item* - (x*, y*) /* in [1,2]
+        item = item1 + item2
+        count[item] = i
+        if item[2:4] != item[0:2] and item[2:4] + item[0:2] in count:
+            all_conflicts.append(('e', [count[item[2:4] + item[0:2]], i], item[2:4] + item[0:2]))
+    # generates ('e', [agent_id1 agent_id2], (x1, y1, x2, y2))
+    return all_conflicts
 
 
 # Node for grid
@@ -74,10 +87,11 @@ class CTNode:
         t = 0
         max_t = max(map(lambda x: len(x[0]), self.solution.values()))
         while True:
-            all_locations = [item_in_list(self.solution[i][0], t) for i in range(len(self.solution))]
+            all_locations = [[item_in_list(self.solution[i][0], ts) for i in range(len(self.solution))]
+                             for ts in [t - 1, t]]
             for coord_ids in list_duplicates(all_locations):
-                # (agent_id1 ... agent_idk, x, y, t)
-                return (*coord_ids[1], *coord_ids[0], t)  # a conflict found, validation halts, it's a non-goal node
+                # (conflict_type, agent_id1 ... agent_idk, x, y, t)
+                return (*coord_ids[0], *coord_ids[1], *coord_ids[2], t)  # a conflict found, validation halts, it's a non-goal node
             t += 1
             if t == max_t:
                 break
@@ -91,7 +105,8 @@ class CTNode:
         max_t = max(map(lambda x: len(x[0]), self.solution.values()))
         confl_counter = 0
         while True:
-            all_locations = [item_in_list(self.solution[i][0], t) for i in range(len(self.solution))]
+            all_locations = [[item_in_list(self.solution[i][0], ts) for i in range(len(self.solution))]
+                             for ts in [t - 1, t]]
             for coord_ids in list_duplicates(all_locations):
                 confl_counter += len(coord_ids[1])
             t += 1

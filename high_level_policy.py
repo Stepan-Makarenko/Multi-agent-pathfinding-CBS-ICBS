@@ -36,22 +36,42 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen, **kwar
     OPEN.add_node(root)
     while len(OPEN) != 0:
         p = OPEN.get_best_node()
-        conflict = p.validate_conflicts()  # tuple (a_0_id, a_1_id, ..., a_k_id, x, y, t)
+        conflict = p.validate_conflicts()  # tuple (type, a_0_id, a_1_id, ..., a_k_id, x, y, t)
         if not conflict:
             return p.solution
-        conflicting_agents = conflict[:-3]
-        vertex_and_time = conflict[-3:]
+        if conflict[0] == 'v':
+            conflicting_agents = conflict[1:-3]
+            vertex_and_time = conflict[-3:]
+        else:
+            conflicting_agents = conflict[1:3]
+            vertex_and_time1 = conflict[3:]
+            print(conflict)
+            vertex_and_time2 = vertex_and_time1[2:4] + vertex_and_time1[0:2] + vertex_and_time1[-1:]
+            vertex_and_time = (vertex_and_time1, vertex_and_time2)
 
-        # Try to avoid duplicate detection
-        for i, _ in enumerate(conflicting_agents):
-            a = CTNode(constraints=set(), solution=p.solution.copy(), cost=None, parent=p, entry=0)
-            for j, agent_id in enumerate(conflicting_agents):
-                if i != j:
-                    a.constraints.add((agent_id, *vertex_and_time))
-                    a.solution[agent_id] = low_level_policy(MAPF_instance, id_to_agent[agent_id],
-                                                            constraints=a.extract_all_constraints(), **kwargs)
-            a.cost = sum([a.solution[agent.id][1] for agent in agents])
-            if a.cost < float('inf'):
-                entry += 1
-                a.entry = entry
-                OPEN.add_node(a)
+        if conflict[0] == 'e':
+            # Edge conflict handler
+            for i in range(2):
+                a = CTNode(constraints=set(), solution=p.solution.copy(), cost=None, parent=p, entry=0)
+                a.constraints.add((conflicting_agents[i], *vertex_and_time[i]))
+                a.solution[conflicting_agents[i]] = low_level_policy(MAPF_instance, id_to_agent[conflicting_agents[i]],
+                                                                     constraints=a.extract_all_constraints(), **kwargs)
+                a.cost = sum([a.solution[agent.id][1] for agent in agents])
+                if a.cost < float('inf'):
+                    entry += 1
+                    a.entry = entry
+                    OPEN.add_node(a)
+        else:
+            # Vertex conflict handler
+            for i in conflicting_agents:
+                a = CTNode(constraints=set(), solution=p.solution.copy(), cost=None, parent=p, entry=0)
+                for agent_id in conflicting_agents:
+                    if i != agent_id:
+                        a.constraints.add((agent_id, *vertex_and_time))
+                        a.solution[agent_id] = low_level_policy(MAPF_instance, id_to_agent[agent_id],
+                                                                constraints=a.extract_all_constraints(), **kwargs)
+                a.cost = sum([a.solution[agent.id][1] for agent in agents])
+                if a.cost < float('inf'):
+                    entry += 1
+                    a.entry = entry
+                    OPEN.add_node(a)

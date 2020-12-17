@@ -55,7 +55,8 @@ def AStar(grid_map, agent, constraints, heuristic_function=diagonal_distance, op
             heuristic_dist = heuristic_function(next_coord[0], next_coord[1], goal.i, goal.j)
             next_state = GridNode(next_coord[0], next_coord[1], g=next_g,
                                   t=state.t+1, h=heuristic_dist, f=None, parent=state)
-            if CLOSED.was_expanded(next_state) or (agent.id, next_state.i, next_state.j, next_state.t) in constraints:
+            if CLOSED.was_expanded(next_state) or (agent.id, next_state.i, next_state.j, next_state.t) in constraints \
+               or (agent.id, state.i, state.j, next_state.i, next_state.j, next_state.t) in constraints:
                 continue
             OPEN.add_node(next_state)
 
