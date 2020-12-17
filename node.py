@@ -84,7 +84,7 @@ class CTNode:
         return self.entry < other.entry
 
     def validate_conflicts(self):
-        t = 0
+        t = 1
         max_t = max(map(lambda x: len(x[0]), self.solution.values()))
         while True:
             all_locations = [[item_in_list(self.solution[i][0], ts) for i in range(len(self.solution))]
@@ -101,7 +101,7 @@ class CTNode:
         # returns number of all conflicts, used only to break ties
         if self.n_conflicts:
             return self.n_conflicts
-        t = 0
+        t = 1
         max_t = max(map(lambda x: len(x[0]), self.solution.values()))
         confl_counter = 0
         while True:
