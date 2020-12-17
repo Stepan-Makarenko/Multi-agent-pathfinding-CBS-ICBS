@@ -45,7 +45,7 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen, **kwar
         else:
             conflicting_agents = conflict[1:3]
             vertex_and_time1 = conflict[3:]
-            print(conflict)
+            #print(conflict)
             vertex_and_time2 = vertex_and_time1[2:4] + vertex_and_time1[0:2] + vertex_and_time1[-1:]
             vertex_and_time = (vertex_and_time1, vertex_and_time2)
 
