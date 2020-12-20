@@ -3,7 +3,7 @@ from open import CTOpen
 from low_level_policy import AStar
 
 
-def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen, **kwargs):
+def HCBS(MAPF_instance, agents, use_pc=False, low_level_policy=AStar, open_type=CTOpen, **kwargs):
     # TODO implement high level policy to handle Constraint Tree
     #   use following pseudo code:
     #       Input: MAPF instance
@@ -30,15 +30,16 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen, **kwar
     root = CTNode(constraints=None, solution=None, cost=None, parent=None, entry=entry)
     id_to_agent = {agent.id: agent for agent in agents}
     root.constraints = set()
-    root.solution = {agent.id: low_level_policy(MAPF_instance, agent,
+    root.solution = {agent.id: low_level_policy(MAPF_instance, agent, use_pc=use_pc,
                                                 constraints=root.extract_all_constraints(), **kwargs) for agent in agents}
     root.cost = sum([root.solution[agent.id][1] for agent in agents])
     OPEN.add_node(root)
     while len(OPEN) != 0:
         p = OPEN.get_best_node()
-        conflict = p.validate_conflicts()  # tuple (type, a_0_id, a_1_id, ..., a_k_id, x, y, t)
+        conflict = p.validate_conflicts(use_pc=use_pc)  # tuple (type, a_0_id, a_1_id, ..., a_k_id, x, y, t)
         if not conflict:
-            return p.solution
+            solution = {agent_id: p.solution[agent_id][0:2] for agent_id in p.solution}
+            return solution
         if conflict[0] == 'v':
             conflicting_agents = conflict[1:-3]
             vertex_and_time = conflict[-3:]
@@ -55,6 +56,7 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen, **kwar
                 a = CTNode(constraints=set(), solution=p.solution.copy(), cost=None, parent=p, entry=0)
                 a.constraints.add((conflicting_agents[i], *vertex_and_time[i]))
                 a.solution[conflicting_agents[i]] = low_level_policy(MAPF_instance, id_to_agent[conflicting_agents[i]],
+                                                                     use_pc=use_pc,
                                                                      constraints=a.extract_all_constraints(), **kwargs)
                 a.cost = sum([a.solution[agent.id][1] for agent in agents])
                 if a.cost < float('inf'):
@@ -68,7 +70,7 @@ def HCBS(MAPF_instance, agents, low_level_policy=AStar, open_type=CTOpen, **kwar
                 for agent_id in conflicting_agents:
                     if i != agent_id:
                         a.constraints.add((agent_id, *vertex_and_time))
-                        a.solution[agent_id] = low_level_policy(MAPF_instance, id_to_agent[agent_id],
+                        a.solution[agent_id] = low_level_policy(MAPF_instance, id_to_agent[agent_id], use_pc=use_pc,
                                                                 constraints=a.extract_all_constraints(), **kwargs)
                 a.cost = sum([a.solution[agent.id][1] for agent in agents])
                 if a.cost < float('inf'):

@@ -1,4 +1,5 @@
 import numpy as np
+from collections import defaultdict
 from node import GridNode
 from open import GridOpen
 from close import GridClose
@@ -21,9 +22,18 @@ def manhattan_distance(i1, j1, i2, j2):
     return abs(i1 - i2) + abs(j1 - j2)
 
 
-def AStar(grid_map, agent, constraints, heuristic_function=diagonal_distance, open_type=GridOpen,
+def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagonal_distance, open_type=GridOpen,
           closed_type=GridClose):
-
+    """
+    :param grid_map:
+    :param agent:
+    :param constraints:
+    :param use_pc:
+    :param heuristic_function:
+    :param open_type:
+    :param closed_type:
+    :return: optimal_path, optimal_g, (mdd_widths if use_pc else None)
+    """
     def make_path(goal):
         length = goal.g
         current = goal
@@ -37,6 +47,10 @@ def AStar(grid_map, agent, constraints, heuristic_function=diagonal_distance, op
     # TODO think about time dependence of occupation grid and  what this function should output
     OPEN = open_type()
     CLOSED = closed_type()
+    if use_pc:
+        mdd_widths = defaultdict(set)
+        opt_cost = float('inf')
+        first_found_path = None
 
     goal = GridNode(agent.goal_i, agent.goal_j, t=-1)
 
@@ -46,7 +60,18 @@ def AStar(grid_map, agent, constraints, heuristic_function=diagonal_distance, op
     while len(OPEN) != 0:
         state = OPEN.get_best_node()
         if state == goal:
-            return make_path(state)
+            if use_pc:
+                if state.g <= opt_cost:
+                    opt_cost = state.g
+                    path, _ = make_path(state)
+                    if not first_found_path:
+                        first_found_path = path
+                    for node in path:
+                        mdd_widths[node.t].add((node.i, node.j))
+                else:
+                    return first_found_path, opt_cost, mdd_widths
+            else:
+                return make_path(state)
 
         CLOSED.add_node(state)
         next_coords = grid_map.get_neighbors(state.i, state.j)

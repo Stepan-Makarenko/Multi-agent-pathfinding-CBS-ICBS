@@ -9,24 +9,25 @@ def item_in_list(l, idx):
         return l[-1].i, l[-1].j
 
 
-def list_duplicates(seq):
+def list_conflicts(seq, t):
     # Return conflict vertexes and edges
 
     # Vertex conflict handler
     count = defaultdict(list)
-    for i, item in enumerate(seq[1]):
+    for i, item in seq[1]:
         count[item].append(i)
-    # generates ('v', [agent_id1 ... agent_idk], (x,y))
-    all_conflicts = [('v', locs, key) for key, locs in count.items() if len(locs) > 1]
+    # generates ('v', [agent_id1 ... agent_idk], (x,y, t))
+    all_conflicts = [('v', locs, key + (t,)) for key, locs in count.items() if len(locs) > 1]
 
     # Edge conflict handler
     count = defaultdict(int)
-    for i, (item1, item2) in enumerate(zip(*seq)):  # item* - (x*, y*) /* in [1,2]
-        item = item1 + item2
+    for (item1, item2) in zip(*seq):  # item* - (agent_id*, (x*, y*)) /* in [1,2]
+        i = item1[0]
+        item = item1[1] + item2[1]
         count[item] = i
         if item[2:4] != item[0:2] and item[2:4] + item[0:2] in count:
-            all_conflicts.append(('e', [count[item[2:4] + item[0:2]], i], item[2:4] + item[0:2]))
-    # generates ('e', [agent_id1 agent_id2], (x1, y1, x2, y2))
+            all_conflicts.append(('e', [count[item[2:4] + item[0:2]], i], item[2:4] + item[0:2] + (t,)))
+    # generates ('e', [agent_id1 agent_id2], (x1, y1, x2, y2, t))
     return all_conflicts
 
 
@@ -62,6 +63,7 @@ class CTNode:
         self.cost = cost
         self.parent = parent
         self.entry = entry
+
         self.n_conflicts = None
 
     def __eq__(self, other):
@@ -83,19 +85,43 @@ class CTNode:
         # Further ties are broken in a FIFO manner.
         return self.entry < other.entry
 
-    def validate_conflicts(self):
+    def _compute_conflict_prior(self, conflict):
+        # (type, [agent_id1...agent_idk], (x, y, t))
+        agent_ids = conflict[1]
+        t = conflict[2][-1]
+        return sum([len(self.solution[agent_id][2][t]) for agent_id in agent_ids])
+
+    def validate_conflicts(self, use_pc=False):
         t = 1
         max_t = max(map(lambda x: len(x[0]), self.solution.values()))
-        while True:
-            all_locations = [[item_in_list(self.solution[i][0], ts) for i in range(len(self.solution))]
-                             for ts in [t - 1, t]]
-            for coord_ids in list_duplicates(all_locations):
-                # (conflict_type, agent_id1 ... agent_idk, x, y, t)
-                return (*coord_ids[0], *coord_ids[1], *coord_ids[2], t)  # a conflict found, validation halts, it's a non-goal node
-            t += 1
-            if t == max_t:
-                break
-        return None
+        if use_pc:
+            all_conflicts = []
+            while True:
+                all_locations = [[(i, item_in_list(self.solution[i][0], ts)) for i in self.solution]
+                                 for ts in [t - 1, t]]
+                conflicts = list_conflicts(all_locations, t)
+                all_conflicts += conflicts
+                t += 1
+                if t == max_t:
+                    break
+
+            if all_conflicts:
+                max_prior_conf = min(all_conflicts, key=self._compute_conflict_prior)
+                return (*max_prior_conf[0], *max_prior_conf[1], *max_prior_conf[2])
+            else:
+                return None
+        else:
+            while True:
+                all_locations = [[(i, item_in_list(self.solution[i][0], ts)) for i in self.solution]
+                                 for ts in [t - 1, t]]
+                conflicts = list_conflicts(all_locations, t)
+                for conflict in conflicts:
+                    # (conflict_type, agent_id1 ... agent_idk, x, y, t)
+                    return (*conflict[0], *conflict[1], *conflict[2])  # a conflict found, validation halts, it's a non-goal node
+                t += 1
+                if t == max_t:
+                    break
+            return None
 
     def count_n_of_conflicts(self):
         # returns number of all conflicts, used only to break ties
@@ -105,9 +131,9 @@ class CTNode:
         max_t = max(map(lambda x: len(x[0]), self.solution.values()))
         confl_counter = 0
         while True:
-            all_locations = [[item_in_list(self.solution[i][0], ts) for i in range(len(self.solution))]
+            all_locations = [[(i, item_in_list(self.solution[i][0], ts)) for i in self.solution]
                              for ts in [t - 1, t]]
-            for coord_ids in list_duplicates(all_locations):
+            for coord_ids in list_conflicts(all_locations, t):
                 confl_counter += len(coord_ids[1])
             t += 1
             if t == max_t:
