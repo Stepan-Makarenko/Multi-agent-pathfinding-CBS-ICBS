@@ -134,7 +134,8 @@ class CTNode:
             all_locations = [[(i, item_in_list(self.solution[i][0], ts)) for i in self.solution]
                              for ts in [t - 1, t]]
             for coord_ids in list_conflicts(all_locations, t):
-                confl_counter += len(coord_ids[1])
+                n = len(coord_ids[1])
+                confl_counter += n * (n - 1) // 2
             t += 1
             if t == max_t:
                 break
