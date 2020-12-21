@@ -52,6 +52,8 @@ def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagona
     opt_cost = float('inf')
     first_found_path = None
 
+
+    max_constrain_t = max(constraints, key=lambda x: x[-1], default=[0])[-1]  # Get maximum time when we can encounter constraint
     goal = GridNode(agent.goal_i, agent.goal_j, t=-1)
 
     # TODO start node should depend on agent!
@@ -59,7 +61,7 @@ def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagona
     # Add time dimension
     while len(OPEN) != 0:
         state = OPEN.get_best_node()
-        if state == goal:
+        if state == goal and state.t > max_constrain_t:
             if use_pc:
                 if state.g <= opt_cost:
                     opt_cost = state.g

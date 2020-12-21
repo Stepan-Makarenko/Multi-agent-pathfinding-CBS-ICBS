@@ -3,7 +3,7 @@ from open import CTOpen
 from low_level_policy import AStar
 import time
 
-
+from collections import defaultdict
 def HCBS(MAPF_instance, agents, use_pc=False, experiment_mode=False, max_time=300, verbose=False, low_level_policy=AStar, open_type=CTOpen, **kwargs):
     # TODO implement high level policy to handle Constraint Tree
     #   use following pseudo code:
@@ -41,7 +41,17 @@ def HCBS(MAPF_instance, agents, use_pc=False, experiment_mode=False, max_time=30
         print(use_pc, max_time)
     while len(OPEN) != 0:
         p = OPEN.get_best_node()
+
+        paths = defaultdict(list)
+        for agent in p.solution:
+            for ts, node in enumerate(p.solution[agent][0]):
+                paths[agent].append((ts, node.i, node.j))
+        # print(paths)
+        # print(p.constraints, p.cost)
+
         conflict = p.validate_conflicts(use_pc=use_pc)  # tuple (type, a_0_id, a_1_id, ..., a_k_id, x, y, t)
+        # print(conflict)
+        # print('\n')
         runtime = time.time() - start_time
         if runtime > max_time:
             return False

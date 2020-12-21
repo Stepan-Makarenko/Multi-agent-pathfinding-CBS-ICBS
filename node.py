@@ -16,7 +16,7 @@ def list_conflicts(seq, t):
     count = defaultdict(list)
     for i, item in seq[1]:
         count[item].append(i)
-    # generates ('v', [agent_id1 ... agent_idk], (x,y, t))
+    # generates ('v', [agent_id1 ... agent_idk], (x, y, t))
     all_conflicts = [('v', locs, key + (t,)) for key, locs in count.items() if len(locs) > 1]
 
     # Edge conflict handler
