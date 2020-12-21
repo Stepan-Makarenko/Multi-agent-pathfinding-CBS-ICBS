@@ -89,7 +89,7 @@ class CTNode:
         # (type, [agent_id1...agent_idk], (x, y, t))
         agent_ids = conflict[1]
         t = conflict[2][-1]
-        return sum([len(self.solution[agent_id][2][t]) for agent_id in agent_ids])
+        return sum([len(self.solution[agent_id][2][t]) / len(agent_ids) for agent_id in agent_ids])
 
     def validate_conflicts(self, use_pc=False):
         t = 1

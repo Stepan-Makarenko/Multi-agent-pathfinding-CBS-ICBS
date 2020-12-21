@@ -47,10 +47,10 @@ def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagona
     # TODO think about time dependence of occupation grid and  what this function should output
     OPEN = open_type()
     CLOSED = closed_type()
-    if use_pc:
-        mdd_widths = defaultdict(set)
-        opt_cost = float('inf')
-        first_found_path = None
+
+    mdd_widths = defaultdict(set)
+    opt_cost = float('inf')
+    first_found_path = None
 
     goal = GridNode(agent.goal_i, agent.goal_j, t=-1)
 
@@ -85,4 +85,4 @@ def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagona
                 continue
             OPEN.add_node(next_state)
 
-    return None, float('inf')
+    return first_found_path, opt_cost, mdd_widths
