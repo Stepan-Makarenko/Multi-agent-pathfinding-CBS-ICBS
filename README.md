@@ -19,4 +19,5 @@
 ## Примеры работы
 ![1](media/empty.gif)
 
+
 ![2](media/room.gif)
