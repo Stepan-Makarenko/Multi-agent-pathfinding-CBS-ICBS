@@ -46,12 +46,8 @@ def HCBS(MAPF_instance, agents, use_pc=False, experiment_mode=False, max_time=30
         for agent in p.solution:
             for ts, node in enumerate(p.solution[agent][0]):
                 paths[agent].append((ts, node.i, node.j))
-        # print(paths)
-        # print(p.constraints, p.cost)
 
         conflict = p.validate_conflicts(use_pc=use_pc)  # tuple (type, a_0_id, a_1_id, ..., a_k_id, x, y, t)
-        # print(conflict)
-        # print('\n')
         runtime = time.time() - start_time
         if runtime > max_time:
             return False
@@ -66,7 +62,6 @@ def HCBS(MAPF_instance, agents, use_pc=False, experiment_mode=False, max_time=30
         else:
             conflicting_agents = conflict[1:3]
             vertex_and_time1 = conflict[3:]
-            #print(conflict)
             vertex_and_time2 = vertex_and_time1[2:4] + vertex_and_time1[0:2] + vertex_and_time1[-1:]
             vertex_and_time = (vertex_and_time1, vertex_and_time2)
 

@@ -48,7 +48,8 @@ def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagona
     OPEN = open_type()
     CLOSED = closed_type()
 
-    mdd_widths = defaultdict(set)
+    # timestep to optimal path widths
+    widths = defaultdict(int)
     opt_cost = float('inf')
     first_found_path = None
 
@@ -61,6 +62,8 @@ def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagona
     # Add time dimension
     while len(OPEN) != 0:
         state = OPEN.get_best_node()
+        CLOSED.add_node(state)
+
         if state == goal and state.t > max_constrain_t:
             if use_pc:
                 if state.g <= opt_cost:
@@ -68,23 +71,54 @@ def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagona
                     path, _ = make_path(state)
                     if not first_found_path:
                         first_found_path = path
-                    for node in path:
-                        mdd_widths[node.t].add((node.i, node.j))
-                else:
-                    return first_found_path, opt_cost, mdd_widths
+
+                    DAG = defaultdict(set)
+                    OPEN = GridOpen()
+                    OPEN.add_node(GridNode(agent.start_i, agent.start_j, t=0, g=0, h=0))
+                    nodes_levels = []
+                    while len(OPEN) != 0:
+                        state = OPEN.get_best_node()
+                        if state.f > opt_cost:
+                            continue
+                        if state == goal and state.g == opt_cost:
+                            nodes_levels.insert(0, DAG[(state.i, state.j, state.t)])
+                            widths[state.t-1] += len(DAG[(state.i, state.j, state.t)])
+                            while True:
+                                w = set()
+                                for s in nodes_levels[0]:
+                                    w = w.union(DAG[s])
+                                if not w:
+                                    break
+                                nodes_levels.insert(0, w)
+                                widths[s[-1]-1] += len(w)
+
+                        next_coords = grid_map.get_neighbors(state.i, state.j)
+                        for next_coord in next_coords:
+                            next_g = state.g + calculate_cost(state.i, state.j, next_coord[0], next_coord[1])
+                            heuristic_dist = heuristic_function(next_coord[0], next_coord[1], goal.i, goal.j)
+                            next_state = GridNode(next_coord[0], next_coord[1], g=next_g,
+                                                  t=state.t + 1, h=heuristic_dist, f=None, parent=state)
+                            if (agent.id, next_state.i, next_state.j, next_state.t) in constraints \
+                                    or (
+                            agent.id, state.i, state.j, next_state.i, next_state.j, next_state.t) in constraints:
+                                continue
+                            if state:
+                                DAG[(next_state.i, next_state.j, next_state.t)].add((state.i, state.j, state.t))
+                            OPEN.add_node(next_state)
+
+                    return first_found_path, opt_cost, widths
             else:
                 return make_path(state)
 
-        CLOSED.add_node(state)
         next_coords = grid_map.get_neighbors(state.i, state.j)
         for next_coord in next_coords:
             next_g = state.g + calculate_cost(state.i, state.j, next_coord[0], next_coord[1])
             heuristic_dist = heuristic_function(next_coord[0], next_coord[1], goal.i, goal.j)
             next_state = GridNode(next_coord[0], next_coord[1], g=next_g,
-                                  t=state.t+1, h=heuristic_dist, f=None, parent=state)
+                                  t=state.t + 1, h=heuristic_dist, f=None, parent=state)
             if CLOSED.was_expanded(next_state) or (agent.id, next_state.i, next_state.j, next_state.t) in constraints \
                or (agent.id, state.i, state.j, next_state.i, next_state.j, next_state.t) in constraints:
                 continue
             OPEN.add_node(next_state)
 
-    return first_found_path, opt_cost, mdd_widths
+    return first_found_path, opt_cost

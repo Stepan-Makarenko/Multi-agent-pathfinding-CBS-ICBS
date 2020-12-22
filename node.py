@@ -106,8 +106,19 @@ class CTNode:
                     break
 
             if all_conflicts:
-                max_prior_conf = min(all_conflicts, key=self._compute_conflict_prior)
-                return (*max_prior_conf[0], *max_prior_conf[1], *max_prior_conf[2])
+                semi_card = None
+                for conflict in all_conflicts:
+                    t = conflict[2][-1]
+                    agent_ids = conflict[1]
+                    agent_t_widths = [self.solution[agent_id][2][t] or 1 for agent_id in agent_ids]
+                    if sum(agent_t_widths) == len(agent_ids):
+                        return (*conflict[0], *conflict[1], *conflict[2])
+                    elif any([w == 1 for w in agent_t_widths]):
+                        semi_card = conflict
+                if semi_card:
+                    return (*semi_card[0], *semi_card[1], *semi_card[2])
+                else:
+                    return (*all_conflicts[0][0], *all_conflicts[0][1], *all_conflicts[0][2])
             else:
                 return None
         else:
