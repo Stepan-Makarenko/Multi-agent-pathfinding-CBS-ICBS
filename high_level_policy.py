@@ -4,7 +4,8 @@ from low_level_policy import AStar
 import time
 
 from collections import defaultdict
-def HCBS(MAPF_instance, agents, use_pc=False, experiment_mode=False, max_time=300, verbose=False, low_level_policy=AStar, open_type=CTOpen, **kwargs):
+def HCBS(MAPF_instance, agents, use_pc=False,
+         experiment_mode=False, max_time=300, verbose=False, low_level_policy=AStar, open_type=CTOpen, **kwargs):
     # TODO implement high level policy to handle Constraint Tree
     #   use following pseudo code:
     #       Input: MAPF instance

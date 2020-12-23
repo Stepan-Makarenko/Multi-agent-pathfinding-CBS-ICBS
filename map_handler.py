@@ -15,7 +15,6 @@ class Map:
         self.diagonal_movements = diagonal_movements
         cell_lines = cell_str.split("\n")
         i = 0
-        j = 0
         for l in cell_lines:
             if len(l) != 0:
                 j = 0
@@ -39,10 +38,11 @@ class Map:
             raise Exception("Size Error. Map height = ", i, ", but must be", height)
 
     # Initialization of map by list of cells.
-    def set_grid_cells(self, width, height, grid_cells):
+    def set_grid_cells(self, width, height, grid_cells,  diagonal_movements):
         self.width = width
         self.height = height
         self.cells = grid_cells
+        self.diagonal_movements = diagonal_movements
 
     # Checks cell is on grid.
     def in_bounds(self, i, j):

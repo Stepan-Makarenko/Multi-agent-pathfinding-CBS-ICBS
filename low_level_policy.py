@@ -22,7 +22,7 @@ def manhattan_distance(i1, j1, i2, j2):
     return abs(i1 - i2) + abs(j1 - j2)
 
 
-def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagonal_distance, open_type=GridOpen,
+def AStar(grid_map, agent, constraints=set(), use_pc=False, heuristic_function=diagonal_distance, open_type=GridOpen,
           closed_type=GridClose):
     """
     :param grid_map:
@@ -35,13 +35,20 @@ def AStar(grid_map, agent, constraints, use_pc=False, heuristic_function=diagona
     :return: optimal_path, optimal_g, (mdd_widths if use_pc else None)
     """
     def make_path(goal):
-        length = goal.g
+        final_state = GridNode(goal.i, goal.j, t=-1)
         current = goal
+        # delete extra nodes:
+        while current.parent and current.parent == final_state:
+            current = current.parent
+
+        length = current.g
         path = []
+
         while current.parent:
             path.append(current)
             current = current.parent
         path.append(current)
+
         return path[::-1], length
 
     # TODO think about time dependence of occupation grid and  what this function should output
