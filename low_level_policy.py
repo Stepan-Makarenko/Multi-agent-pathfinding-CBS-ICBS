@@ -74,8 +74,7 @@ def AStar(grid_map, agent, constraints=set(), use_pc=False, heuristic_function=d
         if state == goal and state.t > max_constrain_t:
             if use_pc:
                 if state.g <= opt_cost:
-                    opt_cost = state.g
-                    path, _ = make_path(state)
+                    path, opt_cost = make_path(state)
                     if not first_found_path:
                         first_found_path = path
 
