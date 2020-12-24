@@ -110,11 +110,16 @@ def cast(x):
         return x
 
 
-def read_tasks(path):
+def read_tasks(path, skip_first=True):
     tasksFile = open(path)
     tasks = []
-    ver = tasksFile.readline()
-    for l in tasksFile:
-        tasks += [list(map(cast, l.strip().split('\t')))]
-    tasksFile.close()
+    if skip_first:
+        ver = tasksFile.readline()
+        for l in tasksFile:
+            tasks += [list(map(cast, l.strip().split('\t')))]
+        tasksFile.close()
+    else:
+        for l in tasksFile:
+            tasks += [list(map(cast, l.strip().split('\t')))]
+        tasksFile.close()
     return tasks
