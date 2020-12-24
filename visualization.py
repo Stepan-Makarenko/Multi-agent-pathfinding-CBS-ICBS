@@ -50,13 +50,7 @@ def draw(grid_map, agents=None, solution=None, fig_size=(6.4, 6.4), nodesExpande
                 if (goal is not None) and (grid_map.traversable(goal.i, goal.j)):
                     draw.ellipse((goal.j * k + 1, goal.i * k + 1, (goal.j + 1) * k - 2, (goal.i + 1) * k - 2),
                                    fill=collors[i], width=0)
-
-                    #             fig, ax = plt.subplots(dpi=150)
-                    #             ax.axes.xaxis.set_visible(False)
-                    #             ax.axes.yaxis.set_visible(False)
-                    #             plt.imshow(im, animated=True)
             img = plt.imshow(im, animated=True)
-            #             print(img)
             images.append([img])
         ani = animation.ArtistAnimation(fig, images, interval=400, blit=True, repeat_delay=100)
         HTML(ani.to_html5_video())

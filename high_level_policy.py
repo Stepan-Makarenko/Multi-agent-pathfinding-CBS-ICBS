@@ -2,11 +2,22 @@ from node import CTNode
 from open import CTOpen
 from low_level_policy import AStar
 import time
-
 from collections import defaultdict
-def HCBS(MAPF_instance, agents, use_pc=False,
-         experiment_mode=False, max_time=300, verbose=False, low_level_policy=AStar, open_type=CTOpen, **kwargs):
-    # TODO implement high level policy to handle Constraint Tree
+
+
+def HCBS(MAPF_instance, agents, use_pc=False,experiment_mode=False, max_time=300,
+         low_level_policy=AStar, open_type=CTOpen, **kwargs):
+    """
+    :param MAPF_instance: variable of class Map, represents map with obstacles
+    :param agents: list of variables of class Agent, consisting of the start and goal coordinates
+    :param use_pc: flag that determines whether to use the conflict priority or not
+    :param experiment_mode: flag that determines the output format
+    :param max_time: variable defines the maximum running time of the function in seconds
+    :param low_level_policy: algorithm that finds the optimal path for each agent in agents
+    :param open_type: define open class to use for nodes processing
+    :param kwargs: additional parameters to be passed in the low_level policy
+    :return: (nodes_created, runtime) if experiment_mode else solution
+    """
     #   use following pseudo code:
     #       Input: MAPF instance
     #       Root.constraints = ∅
@@ -38,8 +49,6 @@ def HCBS(MAPF_instance, agents, use_pc=False,
     root.cost = sum([root.solution[agent.id][1] for agent in agents])
     OPEN.add_node(root)
     start_time = time.time()
-    if verbose:
-        print(use_pc, max_time)
     while len(OPEN) != 0:
         p = OPEN.get_best_node()
 

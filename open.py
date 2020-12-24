@@ -3,7 +3,6 @@ from node import GridNode, CTNode
 
 
 class CTOpen:
-    # TODO implement Constraint Tree OPEN for CT nodes
     def __init__(self):
         self.queue = []
 

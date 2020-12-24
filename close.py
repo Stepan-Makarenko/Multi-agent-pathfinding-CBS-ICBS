@@ -2,7 +2,6 @@ from node import GridNode, CTNode
 
 
 class CTClose:
-    # TODO implement Constraint Tree CLOSE for CT nodes
     def __init__(self):
         pass
 

@@ -46,18 +46,20 @@ class GridNode:
         self.parent = parent
 
     def __eq__(self, other):
-        # Use t = -1 to define goal_state timestep
+        # Use t = -1 to define goal_state time step
         return (self.i == other.i) and (self.j == other.j) and ((self.t == other.t) or self.t == -1 or other.t == -1)
 
 
 # Node for Constraint Tree (CT)
 class CTNode:
     def __init__(self, constraints, solution, cost, parent=None, entry=0):
-        # TODO implement CT node with following list of fields:
-        #   constraints - set of (agent_id, i, j, t), only the last set is stored
-        #   solution - (agent_id: (path, length)}, each path is consistent with constrains
-        #   cost - the total cost of current solution
-        #   entry - to break ties in OPEN in FIFO manner
+        """
+        :param constraints: set of (agent_id, i, j, t), only the last set is stored
+        :param solution: (agent_id: (path, length)}, each path is consistent with constrains
+        :param cost: the total cost of current solution
+        :param parent: parent node
+        :param entry: to break ties in OPEN in FIFO manner
+        """
         self.constraints = constraints
         self.solution = solution
         self.cost = cost
@@ -84,12 +86,6 @@ class CTNode:
             return True
         # Further ties are broken in a FIFO manner.
         return self.entry < other.entry
-
-    def _compute_conflict_prior(self, conflict):
-        # (type, [agent_id1...agent_idk], (x, y, t))
-        agent_ids = conflict[1]
-        t = conflict[2][-1]
-        return sum([len(self.solution[agent_id][2][t]) / len(agent_ids) for agent_id in agent_ids])
 
     def validate_conflicts(self, use_pc=False):
         t = 1

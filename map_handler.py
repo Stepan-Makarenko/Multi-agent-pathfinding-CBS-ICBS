@@ -1,4 +1,3 @@
-# TODO find suitable maps to test algorithm and create a way to handle them
 class Map:
     # Default constructor
     def __init__(self):
@@ -28,7 +27,6 @@ class Map:
                     else:
                         continue
                     j += 1
-                # TODO
                 if j != width:
                     raise Exception("Size Error. Map width = ", j, ", but must be", width)
 
@@ -54,7 +52,6 @@ class Map:
 
     # Creates a list of neighbour cells as (i,j) tuples.
     def get_neighbors(self, i, j):
-        # TODO Change the function so that the list includes the diagonal neighbors of the cell.
         # Cutting corners must be prohibited
         neighbors = []
         if self.diagonal_movements:

@@ -22,17 +22,17 @@ def manhattan_distance(i1, j1, i2, j2):
     return abs(i1 - i2) + abs(j1 - j2)
 
 
-def AStar(grid_map, agent, constraints=set(), use_pc=False, heuristic_function=diagonal_distance, open_type=GridOpen,
+def AStar(grid_map, agent, constraints=set(), use_pc=False, heuristic_function=manhattan_distance, open_type=GridOpen,
           closed_type=GridClose):
     """
-    :param grid_map:
-    :param agent:
-    :param constraints:
-    :param use_pc:
-    :param heuristic_function:
-    :param open_type:
-    :param closed_type:
-    :return: optimal_path, optimal_g, (mdd_widths if use_pc else None)
+    :param grid_map: variable of class Map, represents map with obstacles
+    :param agent: variable of class Agent, consisting of the start and goal coordinates
+    :param constraints: set of restrictions that prohibits an agent from occupying a specific cell
+    :param use_pc: flag that determines whether to use the conflict priority or not
+    :param heuristic_function: define heuristic function to use
+    :param open_type: define open class to use for nodes processing
+    :param closed_type: define closed class to use for nodes processing
+    :return: optimal_path, optimal_g, (widths if use_pc else None)
     """
     def make_path(goal):
         final_state = GridNode(goal.i, goal.j, t=-1)
@@ -51,21 +51,19 @@ def AStar(grid_map, agent, constraints=set(), use_pc=False, heuristic_function=d
 
         return path[::-1], length
 
-    # TODO think about time dependence of occupation grid and  what this function should output
     OPEN = open_type()
     CLOSED = closed_type()
 
-    # timestep to optimal path widths
+    # time step mapping to optimal path widths
     widths = defaultdict(int)
     opt_cost = float('inf')
     first_found_path = None
 
-
-    max_constrain_t = max(constraints, key=lambda x: x[-1], default=[0])[-1]  # Get maximum time when we can encounter constraint
+    # Get maximum time when we can encounter constraint
+    max_constrain_t = max(constraints, key=lambda x: x[-1], default=[0])[-1]
     goal = GridNode(agent.goal_i, agent.goal_j, t=-1)
-
-    # TODO start node should depend on agent!
     OPEN.add_node(GridNode(agent.start_i, agent.start_j, t=0, g=0, h=0))
+
     # Add time dimension
     while len(OPEN) != 0:
         state = OPEN.get_best_node()
@@ -77,7 +75,7 @@ def AStar(grid_map, agent, constraints=set(), use_pc=False, heuristic_function=d
                     path, opt_cost = make_path(state)
                     if not first_found_path:
                         first_found_path = path
-
+                    # Init Direct Acyclic Graph
                     DAG = defaultdict(set)
                     OPEN = GridOpen()
                     OPEN.add_node(GridNode(agent.start_i, agent.start_j, t=0, g=0, h=0))
