@@ -1,22 +1,28 @@
 # Multi-agent-pathfinding
-## Запуск
-Для запуска необходимо скачать этот репозиторий (или сделать git clone https://github.com/Stepan-Makarenko/Multi-agent-pathfinding.git).  
-Для демонстрации работы достаточно выполнить Explore.ipynb.
-## Задача
-Имеется карта и набор агентов, для каждого из которых определены стартовая и целевая позиции. Задача заключается в нахождении путей для каждого агента так, чтобы избежать столкновений между ними. В результате работы данного алгоритма ищется решение - набор путей для каждого агента.
-## Формат входных данных
-Для тестирования следует использовать карты и задачи, где будут указаны стартовые и целевые точки агентов, форматов .map и .scen Moving AI.  
-Данные (карты и задачи) можно взять отсюда: https://www.movingai.com/benchmarks/mapf.html  
-Описание форматов .map и .scen: https://www.movingai.com/benchmarks/formats.html  
-Также возможно использование программы для карт, заданных строкой (. - пустая область, # - препятствие), и произвольных агентов, заданных набором (x start, y start, x goal, g goal). 
-## Формат выходных данных
-Выходные данные - либо набор путей для каждого агента, либо набор путей вместе с отрисовкой агентов, перемещающихся по этим путям (изображение и видео формата .mp4).  
-## Работа с произвольными данными
-Для карт, заданных строкой, и произвольных агентов, заданных набором (x start, y start, x goal, g goal), можно использовать функцию test из tests.py.
-Для файлов movingai можно использовать функцию movingai_test из tests.py.  
-С помощью параметров use_pc и diagonal_movements регулируется, используется ли приоритизация конфликтов и допускаются ли перемещения по диагонали.
-Примеры выполнения test и movingai_test - в файле Explore.ipynb.
-## Примеры работы
+Conflict-based search for optimal multi-agent pathfinding
+## Getting started
+Run the following command:
+```bash
+git clone https://github.com/Stepan-Makarenko/Multi-agent-pathfinding.git
+```
+or download this repository.  
+## Problem definition
+In the multi-agent pathfinding problem (MAPF) we are given a set of agents each with respective start and goal positions. The task is to find paths for all agents while avoiding collisions.
+## Algorithm
+The [**CBS algorithm**](http://www.bgu.ac.il/~felner/2015/CBSjur.pdf) and its [**modification**](https://www.ijcai.org/Proceedings/15/Papers/110.pdf), CBS + PC, that uses conflict prioritization, were implemented in Python. 
+## Input format
+It is recommended to use maps and tasks (where agents' start and goal positions are given) in the .map and .scen Moving AI formats.  
+The data can be found [**here**](https://www.movingai.com/benchmarks/mapf.html).  
+The formats are described [**here**](https://www.movingai.com/benchmarks/formats.html).  
+It is also possible to run the code on maps represented as strings (. - an empty space, # - an obstacle) and agents represented as tuples (x start, y start, x goal, g goal). 
+## Output format
+The algorithm solves the MAPF instance and returns a set of non-conflicting paths for all agents and their respective costs. Additionally, it can return an image and an .mp4 video demonstrating agents' start and goal positions and movements.  
+## Working with MAPF instances
+Run test from tests.py on maps represented as strings and agents represented as tuples.  
+Run movingai_test from tests.py on Moving AI data.  
+The parametrs use_pc and diagonal_movements are responsible for conflict prioritization and whether diagonal movements of agents are allowed.  
+The examples of both test and movingai_test applied to maps and tasks are presented in Explore.ipynb.
+## Working examples
 ![1](media/empty.gif)
 
 
