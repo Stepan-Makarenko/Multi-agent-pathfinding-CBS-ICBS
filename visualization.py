@@ -6,7 +6,7 @@ from IPython.display import HTML
 from node import GridNode
 
 
-def draw(grid_map, agents=None, solution=None, fig_size=(6.4, 6.4), nodesExpanded=None, nodesOpened=None):
+def draw(grid_map, agents=None, solution=None, fig_size=(6.4, 6.4)):
     # Assign different collor for different agents:
     collors = [tuple(np.random.randint(0, 255, 3)) for i in range(len(agents))]
     if solution is not None:

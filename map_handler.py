@@ -4,10 +4,10 @@ class Map:
         self.width = 0
         self.height = 0
         self.cells = []
-        self.diagonal_movements = True
+        self.diagonal_movements = False
 
     # Initialization of map by string.
-    def read_from_string(self, cell_str, width, height, diagonal_movements=True):
+    def read_from_string(self, cell_str, width, height, diagonal_movements=False):
         self.width = width
         self.height = height
         self.cells = [[0 for _ in range(width)] for _ in range(height)]
