@@ -12,10 +12,10 @@ def test(SearchFunction, height, width, mapstr, agents, use_pc=False, diagonal_m
         :param width: width of the map
         :param mapstr: string representation of the map
         :param agents: list of agents (class Agent instances)
-        :param use_pc: flag that determines whether to use the conflict priority or not
+        :param use_pc: flag that determines whether to use the conflict prioritization or not
         :param diagonal_movements: flag that determines whether to allow diagonal movements of agents or not
         :param draw_anim: flag that determines whether to draw animation of agents or not
-        :param kwargs: additional parameters to be passed to the SearchFuntion
+        :param kwargs: additional parameters to be passed to the SearchFunction
         :return: (solution, animation) if draw_anim and not experiment_mode of the SearchFunction else solution
     """
     task_map = Map()
