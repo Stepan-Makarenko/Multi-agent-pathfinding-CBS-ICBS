@@ -16,7 +16,7 @@ The data can be found [**here**](https://www.movingai.com/benchmarks/mapf.html).
 The formats are described [**here**](https://www.movingai.com/benchmarks/formats.html).  
 It is also possible to run the code on maps represented as strings (. - an empty space, # - an obstacle) and agents represented as tuples (x start, y start, x goal, g goal). 
 
-We also created a set of 100 8x8 maps with an average of 15% obstacles and scenes for 16 agents. It is guaranteed that all free slots on the maps are connected by paths and every scene is valid.
+We also created a set of 100 8x8 maps with an average of 15% obstacles and scenes for 16 agents in the formats described above. It is guaranteed that all free slots on the maps are connected by paths and every scene is valid.
 ## Output format
 The algorithm solves the MAPF instance and returns a set of non-conflicting paths for all agents and their respective costs. Additionally, it can return an image and an .mp4 video demonstrating agents' start and goal positions and movements.  
 ## Working with MAPF instances
