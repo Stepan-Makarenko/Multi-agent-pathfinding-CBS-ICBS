@@ -43,9 +43,9 @@ def movingai_test(SearchFunction, map_file, task_file, n_agents, random_choice=T
         :param diagonal_movements: flag that determines whether to allow diagonal movements of agents or not
         :param rseed: random seed, used if random_choice=True
         :param draw_anim: flag that determines whether to draw animation of agents or not
-        :param kwargs: additional parameters to be passed to the SearchFuntion
+        :param kwargs: additional parameters to be passed to the SearchFunction
         :return: (solution, animation) if draw_anim and not experiment_mode of the SearchFunction else solution
-        """
+    """
     if random_choice:
         random.seed(rseed)
         tasks = random.sample(read_tasks(task_file), n_agents)
