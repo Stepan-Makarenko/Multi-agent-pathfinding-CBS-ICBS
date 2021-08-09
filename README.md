@@ -10,6 +10,8 @@ or download this repository.
 In the multi-agent pathfinding problem (MAPF) we are given a set of agents each with respective start and goal positions. The task is to find paths for all agents while avoiding collisions.
 ## Algorithm
 The [**CBS algorithm**](http://www.bgu.ac.il/~felner/2015/CBSjur.pdf) and its [**modification**](https://www.ijcai.org/Proceedings/15/Papers/110.pdf), CBS + PC, that uses conflict prioritization, were implemented in Python. 
+
+![3](media/CBS%20vs%20CBS%2BPC.png)
 ## Input format
 It is recommended to use maps and tasks (where agents' start and goal positions are given) in the .map and .scen Moving AI formats.  
 The data can be found [**here**](https://www.movingai.com/benchmarks/mapf.html).  
